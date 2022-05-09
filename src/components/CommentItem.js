@@ -2,6 +2,11 @@ import { LitElement, html, css } from "lit";
 import "./VoteButton.js";
 
 export class CommentItem extends LitElement {
+  static properties = {
+    score: { type: Number },
+    vote: { type: String, reflect: true },
+  };
+
   static styles = css`
     :host {
       display: flex;
@@ -17,9 +22,43 @@ export class CommentItem extends LitElement {
       width: 100%;
     }
   `;
+
+  constructor() {
+    super();
+    this.score = 5;
+  }
+
+  updateScore(e) {
+    this.vote = e.detail.value;
+  }
+
+  willUpdate(changedProps) {
+    if (changedProps.has("vote")) {
+      const newValue = this.vote;
+      const oldValue = changedProps.get("vote");
+
+      if (newValue === "up") {
+        if (oldValue === "down") {
+          this.score += 2;
+        } else {
+          this.score += 1;
+        }
+      } else if (newValue === "down") {
+        if (oldValue === "up") {
+          this.score -= 2;
+        } else {
+          this.score -= 1;
+        }
+      }
+    }
+  }
+
   render() {
     return html`<div class="wrapper">
-      <vote-button></vote-button>
+      <vote-button
+        @onVote=${this.updateScore}
+        .score=${this.score}
+      ></vote-button>
     </div>`;
   }
 }
