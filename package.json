@@ -10,7 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lit": "^2.2.3"
+    "lit": "^2.2.3",
+    "pwa-helpers": "^0.9.1",
+    "redux": "^4.2.0",
+    "reselect": "^4.1.5"
   },
   "devDependencies": {
     "@web/dev-server": "^0.1.31"
