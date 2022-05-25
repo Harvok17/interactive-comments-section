@@ -3,6 +3,7 @@ import { LitElement, html, css } from "lit";
 export class VoteButton extends LitElement {
   static properties = {
     score: { type: Number },
+    vote: { type: String, reflect: true },
   };
 
   static styles = css`
@@ -17,7 +18,7 @@ export class VoteButton extends LitElement {
     .plus-button {
       border: 0;
       padding: 7px 10px;
-      border-radius: 5px 5px 0 0;
+      border-radius: 10px 10px 0 0;
       background-color: var(--light-gray);
       cursor: pointer;
     }
@@ -25,7 +26,7 @@ export class VoteButton extends LitElement {
     .minus-button {
       border: 0;
       padding: 3px 10px 8px 10px;
-      border-radius: 0 0 5px 5px;
+      border-radius: 0 0 10px 10px;
       background-color: var(--light-gray);
       cursor: pointer;
     }
@@ -37,14 +38,40 @@ export class VoteButton extends LitElement {
     }
   `;
 
+  constructor() {
+    super();
+    this.score = 0;
+  }
+
+  willUpdate(changedProps) {
+    if (changedProps.has("vote")) {
+      const newValue = this.vote;
+      const oldValue = changedProps.get("vote");
+
+      if (newValue === "up") {
+        if (oldValue === "down") {
+          this.score += 2;
+        } else {
+          this.score += 1;
+        }
+      } else if (newValue === "down") {
+        if (oldValue === "up") {
+          this.score -= 2;
+        } else {
+          this.score -= 1;
+        }
+      }
+      this.dispatchEvent(new Event("vote-changed"));
+    }
+  }
+
   render() {
     return html`
       <button
         class="plus-button"
-        @click=${() =>
-          this.dispatchEvent(
-            new CustomEvent("onVote", { detail: { value: "up" } })
-          )}
+        @click=${() => {
+          this.vote = "up";
+        }}
       >
         <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -56,10 +83,9 @@ export class VoteButton extends LitElement {
       <span class="score">${this.score}</span>
       <button
         class="minus-button"
-        @click=${() =>
-          this.dispatchEvent(
-            new CustomEvent("onVote", { detail: { value: "down" } })
-          )}
+        @click=${() => {
+          this.vote = "down";
+        }}
       >
         <svg width="11" height="3" xmlns="http://www.w3.org/2000/svg">
           <path
