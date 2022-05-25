@@ -4,6 +4,7 @@ import "./VoteButton.js";
 export class CommentItem extends LitElement {
   static properties = {
     score: { type: Number },
+    showReply: { type: Boolean, state: true },
   };
 
   static styles = css`
@@ -37,7 +38,7 @@ export class CommentItem extends LitElement {
     .reply textarea {
       flex: 1;
       margin-inline: 20px;
-      height: 60px;
+      height: 80px;
       border-radius: 10px;
       resize: none;
       padding: 20px;
@@ -45,8 +46,8 @@ export class CommentItem extends LitElement {
     }
 
     .reply img {
-      height: 50px;
-      width: 50px;
+      height: 40px;
+      width: 40px;
     }
 
     .comment__details {
@@ -79,10 +80,28 @@ export class CommentItem extends LitElement {
   constructor() {
     super();
     this.score = 5;
+    this.showReply = false;
   }
 
   updateScore(e) {
     console.log(e.target.score);
+  }
+
+  _toggleShowReply() {
+    this.showReply = !this.showReply;
+  }
+
+  _renderReplyInput() {
+    return html`
+      <div class="reply">
+        <img
+          src="./images/avatars/image-juliusomo.png"
+          alt="current user image"
+        />
+        <textarea></textarea>
+        <button>Reply</button>
+      </div>
+    `;
   }
 
   render() {
@@ -101,7 +120,7 @@ export class CommentItem extends LitElement {
               <span class="avatar__username">amyrobson</span>
               <span class="avatar__comment-date">1 month ago</span>
             </div>
-            <button>Reply</button>
+            <button @click=${this._toggleShowReply}>Reply</button>
           </div>
           <p>
             Impressive! Though it seems the drag feature could be improved. But
@@ -110,14 +129,7 @@ export class CommentItem extends LitElement {
           </p>
         </div>
       </div>
-      <div class="reply">
-        <img
-          src="./images/avatars/image-juliusomo.png"
-          alt="current user image"
-        />
-        <textarea></textarea>
-        <button>Reply</button>
-      </div> `;
+      ${this.showReply ? this._renderReplyInput() : null}`;
   }
 }
 
