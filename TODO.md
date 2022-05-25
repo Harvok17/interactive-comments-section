@@ -1,0 +1,10 @@
+- Add Redux
+
+Possible redux actions:
+
+- INCREMENT_SCORE
+- DECREMENT_SCORE
+- ADD_REPLY
+- DELETE_REPLY
+- EDIT_REPLY
+- ADD_COMMENT
