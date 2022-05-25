@@ -26,12 +26,12 @@ export class CommentsSection extends LitElement {
     console.log(this.store);
   }
 
-  _updateStore(index) {
+  _updateStore(id) {
     return (e) => {
       this.store = {
         ...this.store,
-        comments: this.store.comments.map((comment, idx) =>
-          index === idx ? e.target.commentData : comment
+        comments: this.store.comments.map((comment) =>
+          comment.id === id ? e.target.commentData : comment
         ),
       };
 
@@ -42,10 +42,10 @@ export class CommentsSection extends LitElement {
   render() {
     return html`
       ${this.store.comments.map(
-        (comment, index) =>
+        (comment) =>
           html`<comment-item
             .commentData=${comment}
-            @comment-update=${this._updateStore(index)}
+            @comment-update=${this._updateStore(comment.id)}
           ></comment-item>`
       )}
     `;
