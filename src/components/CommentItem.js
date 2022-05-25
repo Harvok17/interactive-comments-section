@@ -3,6 +3,7 @@ import "./VoteButton.js";
 
 export class CommentItem extends LitElement {
   static properties = {
+    commentData: { type: Object },
     score: { type: Number },
     showReply: { type: Boolean, state: true },
   };
@@ -16,6 +17,11 @@ export class CommentItem extends LitElement {
       background-color: var(--very-light-gray);
       padding: 20px;
     }  */
+
+    :host {
+      display: block;
+      margin-bottom: 20px;
+    }
 
     p {
       line-height: 1.5em;
@@ -79,12 +85,16 @@ export class CommentItem extends LitElement {
 
   constructor() {
     super();
-    this.score = 5;
     this.showReply = false;
+    this.commentData = {};
   }
 
-  updateScore(e) {
-    console.log(e.target.score);
+  _updateScore(e) {
+    this.commentData = {
+      ...this.commentData,
+      score: e.target.score,
+    };
+    this.dispatchEvent(new Event("comment-update"));
   }
 
   _toggleShowReply() {
@@ -105,28 +115,22 @@ export class CommentItem extends LitElement {
   }
 
   render() {
+    const { id, content, user, score, createdAt } = this.commentData;
     return html`<div class="comment">
         <vote-button
-          @vote-changed=${this.updateScore}
-          .score=${this.score}
+          @vote-changed=${this._updateScore}
+          .score="${score}"
         ></vote-button>
         <div class="comment__details">
           <div class="comment__header">
             <div class="avatar">
-              <img
-                src="./images/avatars/image-amyrobson.png"
-                alt="user image"
-              />
-              <span class="avatar__username">amyrobson</span>
-              <span class="avatar__comment-date">1 month ago</span>
+              <img src="${user.image.png}" alt="user image" />
+              <span class="avatar__username">${user.username}</span>
+              <span class="avatar__comment-date">${createdAt}</span>
             </div>
             <button @click=${this._toggleShowReply}>Reply</button>
           </div>
-          <p>
-            Impressive! Though it seems the drag feature could be improved. But
-            overall it looks incredible. You've nailed the design and the
-            responsiveness at various breakpoints works really well.
-          </p>
+          <p>${content}</p>
         </div>
       </div>
       ${this.showReply ? this._renderReplyInput() : null}`;
