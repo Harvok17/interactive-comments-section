@@ -1,8 +1,10 @@
 import { LitElement, html, css } from "lit";
+import { connect } from "pwa-helpers";
+import { store } from "../redux/store.js";
 import "./CommentItem.js";
-import JsonData from "../../data.json" assert { type: "json" };
+import "./ReplySection";
 
-export class CommentsSection extends LitElement {
+export class CommentsSection extends connect(store)(LitElement) {
   static styles = css`
     :host {
       display: block;
@@ -13,40 +15,24 @@ export class CommentsSection extends LitElement {
   `;
 
   static properties = {
-    store: { state: true },
+    comments: { state: true },
   };
 
-  constructor() {
-    super();
-    this.store = JsonData;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    console.log(this.store);
-  }
-
-  _updateStore(id) {
-    return (e) => {
-      this.store = {
-        ...this.store,
-        comments: this.store.comments.map((comment) =>
-          comment.id === id ? e.target.commentData : comment
-        ),
-      };
-
-      console.log(this.store);
-    };
+  stateChanged(state) {
+    this.comments = state.comments;
   }
 
   render() {
     return html`
-      ${this.store.comments.map(
+      ${this.comments.map(
         (comment) =>
-          html`<comment-item
-            .commentData=${comment}
-            @comment-update=${this._updateStore(comment.id)}
-          ></comment-item>`
+          html`<comment-item .commentData=${comment}></comment-item>
+            ${comment.replies.length > 0
+              ? html`<reply-section
+                  .parentCommentId=${comment.id}
+                  .replies=${comment.replies}
+                ></reply-section>`
+              : null} `
       )}
     `;
   }

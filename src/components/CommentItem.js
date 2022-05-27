@@ -1,7 +1,10 @@
 import { LitElement, html, css } from "lit";
+import { connect } from "pwa-helpers";
+import { updateCommentScore, updateReplyScore } from "../redux/actions.js";
+import { store } from "../redux/store.js";
 import "./VoteButton.js";
 
-export class CommentItem extends LitElement {
+export class CommentItem extends connect(store)(LitElement) {
   static properties = {
     commentData: { type: Object },
     score: { type: Number },
@@ -87,14 +90,19 @@ export class CommentItem extends LitElement {
     super();
     this.showReply = false;
     this.commentData = {};
+    this.replyContext = false;
+    this.parentCommentId = null;
   }
 
   _updateScore(e) {
-    this.commentData = {
-      ...this.commentData,
-      score: e.target.score,
-    };
-    this.dispatchEvent(new Event("comment-update"));
+    const commentId = this.commentData.id;
+    const score = e.target.score;
+
+    if (this.replyContext && this.parentCommentId) {
+      store.dispatch(updateReplyScore(this.parentCommentId, commentId, score));
+    } else {
+      store.dispatch(updateCommentScore(commentId, score));
+    }
   }
 
   _toggleShowReply() {
@@ -115,7 +123,7 @@ export class CommentItem extends LitElement {
   }
 
   render() {
-    const { id, content, user, score, createdAt } = this.commentData;
+    const { content, user, score, createdAt } = this.commentData;
     return html`<div class="comment">
         <vote-button
           @vote-changed=${this._updateScore}
