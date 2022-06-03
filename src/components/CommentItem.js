@@ -8,7 +8,9 @@ export class CommentItem extends connect(store)(LitElement) {
   static properties = {
     commentData: { type: Object },
     score: { type: Number },
-    showReply: { type: Boolean, state: true },
+    _showReply: { type: Boolean, state: true },
+    _showEdit: { type: Boolean, state: true },
+    currentUser: { type: Object },
   };
 
   static styles = css`
@@ -69,6 +71,10 @@ export class CommentItem extends connect(store)(LitElement) {
       justify-content: space-between;
     }
 
+    .comment__reply-to {
+      font-weight: bold;
+    }
+
     .avatar {
       display: flex;
       align-items: center;
@@ -84,11 +90,31 @@ export class CommentItem extends connect(store)(LitElement) {
       font-weight: bold;
       margin-right: 20px;
     }
+
+    .edit-input {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .edit-input textarea {
+      flex: 1;
+      margin-block: 20px;
+      height: 80px;
+      border-radius: 10px;
+      resize: none;
+      padding: 20px;
+      font-family: inherit;
+    }
+
+    .edit-input button {
+      align-self: flex-end;
+    }
   `;
 
   constructor() {
     super();
-    this.showReply = false;
+    this._showReply = false;
+    this._showEdit = false;
     this.commentData = {};
     this.replyContext = false;
     this.parentCommentId = null;
@@ -106,15 +132,19 @@ export class CommentItem extends connect(store)(LitElement) {
   }
 
   _toggleShowReply() {
-    this.showReply = !this.showReply;
+    this._showReply = !this._showReply;
+  }
+
+  _toggleShowEdit() {
+    this._showEdit = !this._showEdit;
   }
 
   _renderReplyInput() {
     return html`
       <div class="reply">
         <img
-          src="./images/avatars/image-juliusomo.png"
-          alt="current user image"
+          src="${this.currentUser.image.png}"
+          alt="${this.currentUser.username} image"
         />
         <textarea></textarea>
         <button>Reply</button>
@@ -123,7 +153,7 @@ export class CommentItem extends connect(store)(LitElement) {
   }
 
   render() {
-    const { content, user, score, createdAt } = this.commentData;
+    const { content, user, score, createdAt, replyingTo } = this.commentData;
     return html`<div class="comment">
         <vote-button
           @vote-changed=${this._updateScore}
@@ -136,12 +166,27 @@ export class CommentItem extends connect(store)(LitElement) {
               <span class="avatar__username">${user.username}</span>
               <span class="avatar__comment-date">${createdAt}</span>
             </div>
-            <button @click=${this._toggleShowReply}>Reply</button>
+            ${user.username === this.currentUser.username
+              ? html` <div>
+                  <button @click=${() => {}}>Delete</button>
+                  <button @click=${this._toggleShowEdit}>Edit</button>
+                </div>`
+              : html`<button @click=${this._toggleShowReply}>Reply</button>`}
           </div>
-          <p>${content}</p>
+
+          ${this.replyContext && this._showEdit
+            ? html` <div class="edit-input">
+                <textarea></textarea>
+                <button>Update</button>
+              </div>`
+            : this.replyContext
+            ? html` <p>
+                <span class="comment__reply-to">@${replyingTo}</span> ${content}
+              </p>`
+            : html`<p>${content}</p>`}
         </div>
       </div>
-      ${this.showReply ? this._renderReplyInput() : null}`;
+      ${this._showReply ? this._renderReplyInput() : null}`;
   }
 }
 

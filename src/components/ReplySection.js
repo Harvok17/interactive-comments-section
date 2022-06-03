@@ -13,11 +13,13 @@ export class ReplySection extends LitElement {
   static properties = {
     replies: { type: Array },
     parentCommentId: {},
+    currentUser: { type: Object },
   };
   render() {
     return html`${this.replies.map(
       (reply) =>
         html`<comment-item
+          .currentUser=${this.currentUser}
           .parentCommentId=${this.parentCommentId}
           .replyContext="${true}"
           .commentData=${reply}
