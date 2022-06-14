@@ -38,6 +38,12 @@ export const reducer = (state = INITIAL_STATE, action) => {
             : comment
         ),
       };
+
+    case Actions.ADD_COMMENT:
+      return {
+        ...state,
+        comments: [...state.comments, payload],
+      };
     default:
       return state;
   }

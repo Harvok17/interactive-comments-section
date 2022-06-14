@@ -1,3 +1,3 @@
-import { CommentsSection } from "./components/CommentsSection.js";
+import { CommentsPage } from "./pages/CommentsPage.js";
 
-customElements.define("comments-section", CommentsSection);
+customElements.define("comments-page", CommentsPage);
