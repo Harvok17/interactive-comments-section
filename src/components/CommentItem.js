@@ -176,7 +176,7 @@ export class CommentItem extends connect(store)(LitElement) {
 
           ${this.replyContext && this._showEdit
             ? html` <div class="edit-input">
-                <textarea></textarea>
+                <textarea .value=${content}></textarea>
                 <button>Update</button>
               </div>`
             : this.replyContext
