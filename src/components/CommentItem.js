@@ -121,13 +121,14 @@ export class CommentItem extends connect(store)(LitElement) {
   }
 
   _updateScore(e) {
-    const commentId = this.commentData.id;
     const score = e.target.score;
 
     if (this.replyContext && this.parentCommentId) {
-      store.dispatch(updateReplyScore(this.parentCommentId, commentId, score));
+      store.dispatch(
+        updateReplyScore(this.parentCommentId, this.commentData.id, score)
+      );
     } else {
-      store.dispatch(updateCommentScore(commentId, score));
+      store.dispatch(updateCommentScore(this.commentData.id, score));
     }
   }
 
