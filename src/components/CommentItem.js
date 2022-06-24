@@ -120,13 +120,20 @@ export class CommentItem extends connect(store)(LitElement) {
     this.parentCommentId = null;
   }
 
+  get textArea() {
+    return this.renderRoot?.querySelector("textarea") ?? null;
+  }
+
   _updateScore(e) {
     const score = e.target.score;
 
     if (this.replyContext && this.parentCommentId) {
-      store.dispatch(
-        updateReplyScore(this.parentCommentId, this.commentData.id, score)
-      );
+      const scoreData = {
+        parentCommentId: this.parentCommentId,
+        replyId: this.commentData.id,
+        score,
+      };
+      store.dispatch(updateReplyScore(scoreData));
     } else {
       store.dispatch(updateCommentScore(this.commentData.id, score));
     }
@@ -148,9 +155,15 @@ export class CommentItem extends connect(store)(LitElement) {
           alt="${this.currentUser.username} image"
         />
         <textarea></textarea>
-        <button>Reply</button>
+        <button @click=${this._submitReply}>Reply</button>
       </div>
     `;
+  }
+
+  _submitReply() {
+    if (!this.textArea.value.trim()) return;
+
+    console.log(this.commentData);
   }
 
   render() {

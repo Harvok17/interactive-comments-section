@@ -44,6 +44,16 @@ export const reducer = (state = INITIAL_STATE, action) => {
         ...state,
         comments: [...state.comments, payload],
       };
+
+    case Actions.ADD_REPLY:
+      return {
+        ...state,
+        comments: state.comments.map((comment) =>
+          comment.id === payload.parentCommentId
+            ? { ...comment, replies: [...comment.replies, payload.replyData] }
+            : comment
+        ),
+      };
     default:
       return state;
   }
